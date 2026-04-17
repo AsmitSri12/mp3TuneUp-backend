@@ -6,11 +6,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
+const child_process_1 = require("child_process");
 const cleanup_1 = require("./utils/cleanup");
 const metadata_1 = __importDefault(require("./routes/metadata"));
 const convert_1 = __importDefault(require("./routes/convert"));
 const app = (0, express_1.default)();
 const PORT = parseInt(process.env.PORT || '4000', 10);
+// ── Startup Health Check (Double-check system binaries) ───
+function checkBinaries() {
+    const YTDLP_BIN = process.env.YTDLP_BIN || 'yt-dlp';
+    const FFMPEG_BIN = process.env.FFMPEG_BIN || 'ffmpeg';
+    const ytCheck = (0, child_process_1.spawnSync)(YTDLP_BIN, ['--version'], { encoding: 'utf8' });
+    const ffCheck = (0, child_process_1.spawnSync)(FFMPEG_BIN, ['-version'], { encoding: 'utf8' });
+    if (ytCheck.status !== 0) {
+        console.error('\x1b[31m[ERROR] yt-dlp is not installed or not in PATH.\x1b[0m');
+        console.error('Please install it: winget install yt-dlp');
+    }
+    else {
+        console.log(`\x1b[32m[HEALTHY] yt-dlp version: ${ytCheck.stdout.trim()}\x1b[0m`);
+    }
+    if (ffCheck.status !== 0) {
+        console.error('\x1b[31m[ERROR] ffmpeg is not installed or not in PATH.\x1b[0m');
+        console.error('Please install it: winget install ffmpeg');
+    }
+    else {
+        console.log(`\x1b[32m[HEALTHY] ffmpeg is present.\x1b[0m`);
+    }
+}
+checkBinaries();
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
     .split(',')
     .map((s) => s.trim());

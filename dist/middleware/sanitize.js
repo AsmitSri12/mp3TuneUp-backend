@@ -4,16 +4,19 @@ exports.sanitizeUrl = sanitizeUrl;
 exports.sanitizeMiddleware = sanitizeMiddleware;
 // YouTube URL regex: matches youtube.com/watch, youtu.be, /shorts/, /embed/
 const YOUTUBE_REGEX = /^https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{11}(\S*)$/;
-// Shell metacharacters to block
-const SHELL_METACHAR_REGEX = /[;&|`$<>(){}[\]\\!#*?"']/;
+// Robust sanitization: Allow common URL characters (?, &, =, -, _, #)
+// Block: ; | ` $ < > ( ) [ ] { } " ' \
+const SHELL_METACHAR_REGEX = /[;|`\$<>(){}\[\]{}"'\\]/;
 function sanitizeUrl(raw) {
     if (!raw || typeof raw !== 'string') {
         return { safe: false, url: '', error: 'URL is required.' };
     }
-    const trimmed = decodeURIComponent(raw.trim());
+    // Remove potential malicious unicode/invisible chars
+    const trimmed = raw.trim().replace(/[\u200B-\u200D\uFEFF]/g, '');
     if (trimmed.length > 2048) {
         return { safe: false, url: '', error: 'URL is too long.' };
     }
+    // First check if it's a valid YouTube link
     if (!YOUTUBE_REGEX.test(trimmed)) {
         return {
             safe: false,
@@ -21,7 +24,10 @@ function sanitizeUrl(raw) {
             error: 'Invalid YouTube URL. Please provide a valid youtube.com or youtu.be link.',
         };
     }
-    if (SHELL_METACHAR_REGEX.test(trimmed)) {
+    // Second, check for suspicious shell characters
+    const match = trimmed.match(SHELL_METACHAR_REGEX);
+    if (match) {
+        console.error(`[sanitize] Blocked suspicious character: "${match[0]}" in URL: ${trimmed}`);
         return { safe: false, url: '', error: 'URL contains invalid characters.' };
     }
     return { safe: true, url: trimmed };

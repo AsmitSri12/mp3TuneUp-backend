@@ -12,7 +12,8 @@ function streamMp3ToResponse(ytdlpProcess, res, filename, bitrate = '192k') {
         res.status(500).json({ error: 'yt-dlp process has no stdout.' });
         return;
     }
-    const ffmpeg = (0, child_process_1.spawn)('ffmpeg', [
+    const FFMPEG_BIN = process.env.FFMPEG_BIN || 'ffmpeg';
+    const ffmpeg = (0, child_process_1.spawn)(FFMPEG_BIN, [
         '-i', 'pipe:0', // read from stdin
         '-vn', // no video
         '-ar', '44100', // 44.1kHz sample rate

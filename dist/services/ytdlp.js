@@ -5,6 +5,8 @@ exports.createAudioStream = createAudioStream;
 const child_process_1 = require("child_process");
 const sanitize_1 = require("../middleware/sanitize");
 const MAX_DURATION = parseInt(process.env.MAX_DURATION_SECONDS || '1800', 10);
+const YTDLP_BIN = process.env.YTDLP_BIN || 'yt-dlp';
+const FFMPEG_BIN = process.env.FFMPEG_BIN || 'ffmpeg';
 /**
  * Fetches video metadata using yt-dlp --dump-json (no download).
  */
@@ -13,7 +15,7 @@ async function getMetadata(url) {
     if (!safe)
         throw new Error(error);
     return new Promise((resolve, reject) => {
-        const ytdlp = (0, child_process_1.spawn)('yt-dlp', [
+        const ytdlp = (0, child_process_1.spawn)(YTDLP_BIN, [
             '--dump-json',
             '--no-playlist',
             '--no-warnings',
@@ -71,7 +73,7 @@ function createAudioStream(url) {
     const { safe, url: cleanUrl, error } = (0, sanitize_1.sanitizeUrl)(url);
     if (!safe)
         throw new Error(error);
-    return (0, child_process_1.spawn)('yt-dlp', [
+    return (0, child_process_1.spawn)(YTDLP_BIN, [
         '-f', 'bestaudio',
         '--no-playlist',
         '--no-warnings',
