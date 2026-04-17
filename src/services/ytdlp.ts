@@ -15,6 +15,14 @@ const MAX_DURATION = parseInt(process.env.MAX_DURATION_SECONDS || '1800', 10);
 const YTDLP_BIN = process.env.YTDLP_BIN || 'yt-dlp';
 const FFMPEG_BIN = process.env.FFMPEG_BIN || 'ffmpeg';
 
+const YTDLP_ARGS = [
+  '--dump-json',
+  '--no-playlist',
+  '--no-warnings',
+  '--no-check-certificate',
+  '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+];
+
 /**
  * Fetches video metadata using yt-dlp --dump-json (no download).
  */
@@ -23,12 +31,7 @@ export async function getMetadata(url: string): Promise<VideoMetadata> {
   if (!safe) throw new Error(error);
 
   return new Promise((resolve, reject) => {
-    const ytdlp = spawn(YTDLP_BIN, [
-      '--dump-json',
-      '--no-playlist',
-      '--no-warnings',
-      cleanUrl,
-    ]);
+    const ytdlp = spawn(YTDLP_BIN, [...YTDLP_ARGS, cleanUrl]);
 
     let stdout = '';
     let stderr = '';
@@ -89,10 +92,10 @@ export function createAudioStream(url: string): ChildProcess {
   if (!safe) throw new Error(error);
 
   return spawn(YTDLP_BIN, [
+    ...YTDLP_ARGS,
     '-f', 'bestaudio',
     '--no-playlist',
-    '--no-warnings',
-    '-o', '-',    // output to stdout
+    '-o', '-',
     cleanUrl,
   ]);
 }
