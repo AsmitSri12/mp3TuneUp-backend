@@ -12,9 +12,8 @@ export interface VideoMetadata {
 
 const MAX_DURATION = parseInt(process.env.MAX_DURATION_SECONDS || '1800', 10);
 
-// Absolute paths verified on this machine
-const YTDLP_BIN = 'C:/Users/ashle/AppData/Roaming/Python/Python314/Scripts/yt-dlp.exe';
-const FFMPEG_BIN = 'C:/Users/ashle/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1-full_build/bin/ffmpeg.exe';
+const YTDLP_BIN = process.env.YTDLP_BIN || 'yt-dlp';
+const FFMPEG_BIN = process.env.FFMPEG_BIN || 'ffmpeg';
 
 /**
  * Fetches video metadata using yt-dlp --dump-json (no download).

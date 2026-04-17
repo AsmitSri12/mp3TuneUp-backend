@@ -11,8 +11,8 @@ const PORT = parseInt(process.env.PORT || '4000', 10);
 
 // ── Startup Health Check (Double-check system binaries) ───
 function checkBinaries() {
-  const YTDLP_BIN = 'C:/Users/ashle/AppData/Roaming/Python/Python314/Scripts/yt-dlp.exe';
-  const FFMPEG_BIN = 'C:/Users/ashle/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1-full_build/bin/ffmpeg.exe';
+  const YTDLP_BIN = process.env.YTDLP_BIN || 'yt-dlp';
+  const FFMPEG_BIN = process.env.FFMPEG_BIN || 'ffmpeg';
 
   const ytCheck = spawnSync(YTDLP_BIN, ['--version'], { encoding: 'utf8' });
   const ffCheck = spawnSync(FFMPEG_BIN, ['-version'], { encoding: 'utf8' });

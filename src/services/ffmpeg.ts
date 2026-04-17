@@ -18,7 +18,7 @@ export function streamMp3ToResponse(
     return;
   }
 
-  const FFMPEG_BIN = 'C:/Users/ashle/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1-full_build/bin/ffmpeg.exe';
+  const FFMPEG_BIN = process.env.FFMPEG_BIN || 'ffmpeg';
 
   const ffmpeg = spawn(FFMPEG_BIN, [
     '-i', 'pipe:0',           // read from stdin
