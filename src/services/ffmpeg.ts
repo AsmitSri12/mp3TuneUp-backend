@@ -44,11 +44,12 @@ export function streamMp3ToResponse(
     }
   }, PROCESS_TIMEOUT_MS);
 
-  // Set streaming headers before piping
+  // Set streaming headers
   res.setHeader('Content-Type', 'audio/mpeg');
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-  res.setHeader('Transfer-Encoding', 'chunked');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Cache-Control', 'no-store');
+  res.flushHeaders();
 
   // Pipe yt-dlp stdout → ffmpeg stdin
   ytdlpProcess.stdout.pipe(ffmpeg.stdin!);
