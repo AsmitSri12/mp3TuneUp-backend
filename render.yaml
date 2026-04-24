@@ -14,5 +14,3 @@ envVars:
     value: 1800
   - key: PROCESS_TIMEOUT_MS
     value: 300000
-  - key: ALLOWED_ORIGINS
-    value: https://mp3tuneup-frontend.onrender.com
